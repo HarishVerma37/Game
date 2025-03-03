@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Game</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            text-align: center;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn {
+            border-radius: 20%;
+            height: 150px;
+            width: 150px;
+            border: 6px solid black;
+            margin: 2rem;
+        }
+
+        .red {
+            background-color: #d95980;
+        }
+
+        .green {
+            background-color: #63aac8;
+        }
+
+        .yellow {
+            background-color: #f99b45;
+        }
+
+        .pink {
+            background-color: #819ff9;
+        }
+
+        .flash {
+            background-color: white;
+        }
+
+        .userflash {
+            background-color: green;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Simon Says Game</h1>
+    <h2>Press any key to start the game</h2>
+    <div class="btn-container">
+        <div class="line1">
+            <div class="btn red" id="red" type="button"></div>
+            <div class="btn green" id="green" type="button"></div>
+        </div>
+
+        <div class="line2">
+            <div class="btn yellow" id="yellow" type="button"></div>
+            <div class="btn pink" id="pink" type="button"></div>
+        </div>
+    </div>
+
+    <script>
+        let gameSeq = [];
+        let userSeq = [];
+        let btns = ["red", "yellow", "green", "purple"]
+
+        let started = false;
+        let level = 0;
+
+        let h2 = document.querySelector("h2");
+
+        document.addEventListener("keypress", function () {
+            if (started == false) {
+                console.log("start Game")
+                started = true;
+                levelUp()
+            }
+        })
+
+        function gameFlash(btn) {
+            btn.classList.add("flash");
+            setTimeout(function () {
+                btn.classList.remove("flash")
+            }, 500)
+        }
+
+
+
+        function userFlash(btn) {
+            btn.classList.add("userflash");
+            setTimeout(function () {
+                btn.classList.remove("userflash")
+            }, 500)
+        }
+
+
+        function levelUp() {
+            userSeq = [];
+            level++;
+            h2.innerText = `level ${level}`;
+            let randIdx = Math.floor(Math.random() * 3);
+            let randColor = btns[randIdx];
+            let randBtn = document.querySelector(`.${randColor}`);
+            gameSeq.push(randColor);
+            console.log(gameSeq)
+            gameFlash(randBtn);
+        }
+
+        function checkAns(idx) {
+            // console.log("curr level :", level)
+            if (userSeq[idx] === gameSeq[idx]) {
+                if (userSeq.length == gameSeq.length) {
+                    setTimeout(levelUp, 1000)
+
+                }
+                console.log("same value")
+            } else {
+                h2.innerHTML = `Game Over! Your Score is <b>${level}</b> <br> Press any key to start `;
+                document.querySelector("body").style.backgroundColor = "red"
+                setTimeout(function () {
+                    document.querySelector("body").style.backgroundColor = "white"
+                }, 150)
+                reset()
+            }
+        }
+
+
+        let allBtns = document.querySelectorAll(".btn");
+        function btnPress() {
+            let btn = this;
+            userFlash(btn)
+
+            userColor = btn.getAttribute("id")
+            console.log(userColor);
+            userSeq.push(userColor)
+            checkAns(userSeq.length - 1)
+        }
+
+        for (btn of allBtns) {
+            btn.addEventListener("click", btnPress)
+        }
+
+
+        function reset() {
+            started = false;
+            gameSeq = [];
+            userSeq = [];
+            level = 0;
+        }
+    </script>
+</body>
+
+</html>
